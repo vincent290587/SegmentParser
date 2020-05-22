@@ -225,7 +225,7 @@ public:
 
 	uint32_t getInt(size_t pos) {
 
-		if (pos+4 >= length()) {
+		if (pos+4 > length()) {
 			return 0;
 		}
 

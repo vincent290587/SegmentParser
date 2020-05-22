@@ -45,6 +45,7 @@ public:
             this->done = true;
         }
         this->bitCount += i;
+    	//printf("bitCount %lu \n", this->bitCount);
         //try {
         	int32_t i5 = (int32_t)this->decompressed.getInt(i4 * 4) >> i3;
     		//printf("getInt %ld \n", (int32_t)this->decompressed.getInt(i4 * 4));
@@ -56,12 +57,14 @@ public:
             			this->done = true;
             			return 0;
             		}
-                	//printf("i50 %ld ", (int32_t)i5);
+                	printf("i50 %ld ", (int32_t)i5);
                     i5 = (i5 & ((uint32_t)-1 >> (32 - i6)));
-                    //printf("  i51 %ld ", i5);
+                    printf("  i51 %ld ", i5);
                     uint32_t tmp = this->decompressed.getInt((i4 + 1) * 4);
                     i5 |= (tmp & (((uint32_t)-1) >> (32 - i7))) << i6;
-                    //printf("  i52 %ld \n", ((uint32_t)-1) >> (32 - i7));
+                    printf("  i52 %ld \n", (((uint32_t)-1) >> (32 - i7)) << i6);
+            		printf("getInt %ld (%lu) \n", (int32_t)tmp, i4);
+                    printf("i5 %ld i6 %ld \n", i5, i6);
 //                } catch (IndexOutOfBoundsException unused) {
 //                    this->done = true;
 //                    return 0;
@@ -126,9 +129,7 @@ public:
     	//r7 = this;
     	uint32_t r0 = 32;
     	uint32_t r1 = this->getBits(r0);
-//    	std::vector<uint32_t> r2 = this->original;
-    	uint32_t ir3 = (r1);
-    	this->original.push_back(ir3);
+    	this->original.push_back(r1);
     	//r2 = 3;
     	uint32_t r3 = this->getBits(3);
     	r3 = r3 & 7;
@@ -138,7 +139,7 @@ public:
     		//L_0x0018:
     		uint32_t r4 = this->getBits(r3);
     		//printf();
-    		uint32_t r52 = (uint32_t)-2147483648;
+    		int32_t r52 = -2147483648;
     		uint32_t r6 = 32 - r3;
     		uint32_t r5 = r52 >> r6;
     		if (r4 == r5) {
