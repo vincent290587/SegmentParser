@@ -62,24 +62,34 @@ static const uint8_t m_seg_file[] = {
 		0x00, 0x00, 0x00, 0x00
 };
 
+#define MAX_ARRAY_PRINTF        32
+
 static void _dump_as_hex(uint8_t const *p_data, uint16_t length) {
 
 	if (!p_data) return;
 
-	for (uint16_t i=0; i< length && i < 32; i++) {
-		printf("%02X ", p_data[i]);
+	printf("{0x");
+	for (uint16_t i=0; i< length && i < MAX_ARRAY_PRINTF; i++) {
+		printf("%02X", p_data[i]);
+		if (i< length-1 && i < MAX_ARRAY_PRINTF-1) {
+			printf(",0x");
+		}
 	}
-	printf("\n");
+	printf("} \n");
 }
 
 static void _dump_as_char(uint8_t const *p_data, uint16_t length) {
 
 	if (!p_data) return;
 
+	printf("{");
 	for (uint16_t i=0; i< length && i < 32; i++) {
-		printf("%c ", p_data[i]);
+		printf("%c", p_data[i]);
+		if (i< length-1 && i < MAX_ARRAY_PRINTF-1) {
+			printf(",");
+		}
 	}
-	printf("\n");
+	printf("} \n");
 }
 
 static void _encode_uint32_little(uint32_t value, uint8_t p_data[]) {
@@ -159,7 +169,7 @@ static void _handle_segment_parse(void) {
 	index+=2;
 	NRF_LOG_INFO("grade: %d", grade);
 
-	index+=3; // padding 0
+	index+=3; // padding 1
 
 	// dump name
 	uint16_t name_length = m_cur_u_seg.buffer[index];
@@ -173,10 +183,10 @@ static void _handle_segment_parse(void) {
 	uint16_t poly_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
 	index+=2;
 
+	NRF_LOG_INFO("Polyline length: %u", poly_length);
+
 	NRF_LOG_HEXDUMP_INFO(m_cur_u_seg.buffer+index, poly_length);
 	index+=poly_length;
-
-	NRF_LOG_INFO("Polyline length: %u", poly_length);
 
 	// pr time
 	uint16_t pr_time =  _decode_uint16_little(m_cur_u_seg.buffer+index);
@@ -193,17 +203,23 @@ static void _handle_segment_parse(void) {
 	uint16_t words_comp =  _decode_uint16_little(m_cur_u_seg.buffer+index);
 	index+=2;
 
+	NRF_LOG_INFO("words_comp: %u", words_comp);
+
 	uint16_t comp_dist_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
 	index+=2;
 
 	NRF_LOG_INFO("Dist stream length: %u", comp_dist_length);
+
+	NRF_LOG_HEXDUMP_INFO(m_cur_u_seg.buffer+index, comp_dist_length);
 
 	index+=comp_dist_length;
 
 	uint16_t comp_stream_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
 	index+=2;
 
-	NRF_LOG_INFO("Effort stream length: %u", comp_dist_length);
+	NRF_LOG_INFO("Effort stream length: %u", comp_stream_length);
+
+	NRF_LOG_HEXDUMP_INFO(m_cur_u_seg.buffer+index, comp_stream_length);
 
 	index+=comp_stream_length;
 }
