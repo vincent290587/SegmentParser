@@ -241,6 +241,10 @@ public:
 		return original.size();
 	}
 
+	uint8_t operator [](uint8_t pos) {
+		return original[pos];
+	}
+
 	void toString(void) {
 
 		printf("ByteBuffer: {");
