@@ -243,6 +243,8 @@ int main(int argc, char **argv) {
 		input[i] = (char)i+'[';
 	}
 
+	printf("////////////////////////////////////////////////////////////////\n");
+
 #if TEST0
 //	std::string to_decode = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
 //	std::string decoded;
@@ -255,17 +257,19 @@ int main(int argc, char **argv) {
 //	NRF_LOG_HEXDUMP_INFO((uint8_t*const) decoded.c_str(), decoded.length());
 #endif
 #if TEST1
-//	const char *data = "ABC123Test Lets Try this' input and see What happens";
-	const char       *enc = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
+//	const char       *enc = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
 	char       *out;
 	size_t      out_len;
 
-	out_len = b64_decoded_size(enc);
+	const char data[] = "ABC123Test Lets Try this' input and see What happens";
+	char *p_enc = b64_encode((const unsigned char*)data, sizeof(data));
+
+	out_len = b64_decoded_size(p_enc);
 	printf("decoded size:     '%lu'\n", out_len);
 
-	out = (char*)malloc(out_len);
+	out = (char*)malloc(out_len+1);
 
-	if (!b64_decode(enc, (unsigned char *)out, out_len)) {
+	if (!b64_decode(p_enc, (unsigned char *)out, out_len)) {
 		printf("Decode Failure\n");
 		return 1;
 	}
@@ -276,7 +280,7 @@ int main(int argc, char **argv) {
 	free(out);
 #endif
 #if TEST2
-	const char enc[] = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
+	const char enc[] = "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8";
 	BaseString input_str;
 	input_str.append((const char*)enc, sizeof(enc));
 
@@ -290,24 +294,23 @@ int main(int argc, char **argv) {
 		printf("decoded:  '%ld \n", (int32_t)unpacker.original[i]);
 	}
 #endif
-
+#if 1//TEST3
+//	const uint8_t enc[] = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B};
 	const uint8_t enc[] = {0x04,0x00,0x00,0x00,0x79,0xF0,0x1C,0x82,0x13,0x1F,0x02,0x0E,0x59,0x00,0x00,0x00};
+//	const uint8_t enc[] = {0x34,0x00,0x00,0x00,0x74,0x1D,0xDE,0x26,0x7A,0x22,0x09,0x68,0x26,0xE7,0xEB,0xFC,0x02,0x67,0x97,0xF4,0xCC,0x77,0x00,0x00};
+//	const uint8_t enc[] = {0x54,0x38,0x4F,0x00,0xD1,0xC7,0x06,0x00,0x59,0x1E,0x33,0x32,0x4F,0x40,0x3F,0x44,0x37,0x2A,0x3F,0x2E,0x39,0x2A,0x3F,0x38,0x4D,0x26,0x55,0x32,0x3D,0x2A,0x4F,0x28};
+
 	Base64 myBase64;
 	ByteBuffer bBuffer;
 	bBuffer.addU(enc, sizeof(enc));
 
-	BaseString outStr;
-	myBase64.encode(bBuffer, outStr);
-
-	printf("input:     '%s'\n", outStr.toString());
-
-	SequenceUnpacker unpacker(outStr, outStr.length());
+	SequenceUnpacker unpacker(bBuffer, b64_encoded_size(sizeof(enc)));
 
 	unpacker.unpack();
 
 	for (int i=0; i < unpacker.original.size(); i++) {
 		printf("decoded:  '%ld \n", (int32_t)unpacker.original[i]);
 	}
-
+#endif
 	return 0;
 }

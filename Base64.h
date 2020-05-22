@@ -29,9 +29,14 @@
 
 const char b64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-size_t b64_encoded_size(size_t inlen)
+uint32_t b64_encoded_size(uint32_t inlen)
 {
-	size_t ret;
+	uint32_t ret;
+
+	// we want the upper multiple of 4
+	if (inlen & 0b11) {
+		inlen = ((inlen | 0b100) >> 2) << 2;
+	}
 
 	ret = inlen;
 	if (inlen % 3 != 0)
@@ -86,11 +91,11 @@ int b64invs[] = { 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
 	29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
 	43, 44, 45, 46, 47, 48, 49, 50, 51 };
 
-size_t b64_decoded_size(const char *in)
+uint32_t b64_decoded_size(const char *in)
 {
-	size_t len;
-	size_t ret;
-	size_t i;
+	uint32_t len;
+	uint32_t ret;
+	uint32_t i;
 
 	if (in == NULL)
 		return 0;
@@ -107,7 +112,9 @@ size_t b64_decoded_size(const char *in)
 	}
 
 	// we want the upper multiple of 4
-	ret = ((ret + 3) >> 2) << 2;
+	if (ret & 0b11) {
+		ret = ((ret | 0b100) >> 2) << 2;
+	}
 
 	return ret;
 }
@@ -207,6 +214,15 @@ public:
 		}
 	}
 
+	bool canGetInt(size_t pos) {
+
+		if (pos+4 >= length()) {
+			return false;
+		}
+
+		return true;
+	}
+
 	uint32_t getInt(size_t pos) {
 
 		if (pos+4 >= length()) {
@@ -229,7 +245,7 @@ public:
 
 		printf("ByteBuffer: {");
 		for (uint16_t i=0; i< original.size(); i++) {
-			printf("%02X", original[i]);
+			printf("0x%02X", original[i]);
 			if (i< original.size()-1) {
 				printf(",");
 			}
@@ -259,6 +275,7 @@ public:
 
 		int ret = b64_decode(in.toString(), buffer, out_len);
 
+		_buffer.original.clear();
 		_buffer.add(buffer, out_len);
 
 		return _buffer;
