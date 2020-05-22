@@ -44,9 +44,9 @@ public:
 		ByteBuffer bArr2 = bArr;
 		int length = bArr2.length();
 		int i3 = 8;
-		uint8_t b = (bArr2[0] & 255) | ((bArr2[1] & 255) << 8) | ((bArr2[2] & 255) << 0x10) | ((bArr2[3] & 255) << 0x18);
+		int32_t b = (bArr2[0] & 255) | ((bArr2[1] & 255) << 8) | ((bArr2[2] & 255) << 16) | ((bArr2[3] & 255) << 24);
 		uint8_t b2 = 7;
-		int i4 = (bArr2[4] & 255) | ((bArr2[5] & 255) << 8) | ((bArr2[6] & 255) << 0x10) | ((bArr2[7] & 255) << 0x18);
+		int32_t i4 = (bArr2[4] & 255) | ((bArr2[5] & 255) << 8) | ((bArr2[6] & 255) << 16) | ((bArr2[7] & 255) << 24);
 		_line.push_back(LatLng((double) ((float) (((double) b) / 100000.0)), (double) ((float) (((double) i4) / 100000.0))));
 		while (i3 < length) {
 			int i5 = 0;
@@ -61,7 +61,7 @@ public:
 				}
 				i3 = i;
 			}
-			int i7 = ((i5 & 1) != 0 ? ~(i5 >> 1) : i5 >> 1) + b;
+			int32_t i7 = ((i5 & 1) != 0 ? ~(i5 >> 1) : i5 >> 1) + b;
 			int i8 = 0;
 			int i9 = 0;
 			while (true) {
@@ -91,7 +91,7 @@ public:
 
 	void toString(void) {
 
-		printf("PolyLine: {");
+		printf("PolyLine: { \n");
 		for (uint16_t i=0; i< _line.size(); i++) {
 			printf("%f %f", _line[i].lat, _line[i].lon);
 			if (i< _line.size()-1) {
