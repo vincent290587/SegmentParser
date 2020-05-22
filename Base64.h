@@ -193,10 +193,17 @@ public:
 
 	};
 
-	void add(unsigned char * buffer, size_t length) {
+	void add(const unsigned char buffer[], size_t length) {
 
 		for (int i=0; i< length; i++) {
 			original.push_back((uint8_t)buffer[i]);
+		}
+	}
+
+	void addU(const uint8_t buffer[], size_t length) {
+
+		for (int i=0; i< length; i++) {
+			original.push_back(buffer[i]);
 		}
 	}
 
@@ -230,6 +237,10 @@ public:
 		printf("} \n");
 	}
 
+	const uint8_t * pData() {
+		return original.data();
+	}
+
     std::vector<uint8_t> original;
 };
 
@@ -251,6 +262,13 @@ public:
 		_buffer.add(buffer, out_len);
 
 		return _buffer;
+	}
+
+	void encode(ByteBuffer &in, BaseString &out) {
+
+		char *p_str = b64_encode((const unsigned char*)in.pData(), in.length());
+
+		out.append(p_str, b64_encoded_size(in.length()));
 	}
 
 private:
