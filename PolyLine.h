@@ -47,7 +47,7 @@ public:
 		int32_t b = (bArr2[0] & 255) | ((bArr2[1] & 255) << 8) | ((bArr2[2] & 255) << 16) | ((bArr2[3] & 255) << 24);
 		uint8_t b2 = 7;
 		int32_t i4 = (bArr2[4] & 255) | ((bArr2[5] & 255) << 8) | ((bArr2[6] & 255) << 16) | ((bArr2[7] & 255) << 24);
-		_line.push_back(LatLng((double) ((float) (((double) b) / 100000.0)), (double) ((float) (((double) i4) / 100000.0))));
+		_line.push_back(LatLng(((float) b) / 100000.0f, ((float) i4) / 100000.0f));
 		while (i3 < length) {
 			int i5 = 0;
 			int i6 = 0;
@@ -80,7 +80,7 @@ public:
 				i11 = ~i11;
 			}
 			i4 += i11;
-			_line.push_back(LatLng((double) ((float) (((double) i7) / 100000.0)), (double) ((float) (((double) i4) / 100000.0))));
+			_line.push_back(LatLng(((float) i7) / 100000.0f, ((float) i4) / 100000.0f));
 			b = i7;
 			i3 = i2;
 			b2 = 7;
