@@ -220,11 +220,14 @@ static void _handle_segment_parse(void) {
 	NRF_LOG_INFO("Effort stream length: %u", comp_stream_length);
 
 	NRF_LOG_HEXDUMP_INFO(m_cur_u_seg.buffer+index, comp_stream_length);
+	_dump_as_char(m_cur_u_seg.buffer+index, comp_stream_length);
 
 	index+=comp_stream_length;
 }
 
 ///////////////////////////////////////////////////////////////////
+
+#include "Base64.h"
 
 
 int main(int argc, char **argv) {
@@ -232,6 +235,41 @@ int main(int argc, char **argv) {
 	memcpy(m_cur_u_seg.buffer, m_seg_file, sizeof(m_seg_file));
 
 	_handle_segment_parse();
+
+	char input[16];
+	for (int i=0; i < sizeof(input); i++) {
+		input[i] = (char)i+'[';
+	}
+
+//	std::string to_decode = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
+//	std::string decoded;
+//
+//	Base64 myBase;
+//	myBase.Decode(to_decode, decoded);
+//
+//	NRF_LOG_INFO("Input: %s", to_decode.c_str());
+//	NRF_LOG_INFO("Decoded: %s", decoded.c_str());
+//	NRF_LOG_HEXDUMP_INFO((uint8_t*const) decoded.c_str(), decoded.length());
+
+//	const char *data = "ABC123Test Lets Try this' input and see What happens";
+	const char       *enc = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
+	char       *out;
+	size_t      out_len;
+
+	out_len = b64_decoded_size(enc);
+	printf("decoded size:     '%lu'\n", out_len);
+
+	out = (char*)malloc(out_len);
+
+	if (!b64_decode(enc, (unsigned char *)out, out_len)) {
+		printf("Decode Failure\n");
+		return 1;
+	}
+	out[out_len] = '\0';
+
+	NRF_LOG_HEXDUMP_INFO((uint8_t*const)out, out_len);
+	printf("dec:     '%s'\n", out);
+	free(out);
 
 	return 0;
 }
