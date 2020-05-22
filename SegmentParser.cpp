@@ -128,7 +128,7 @@ static uint16_t _decode_uint16_little(uint8_t const *p_data) {
 
 static void _handle_segment_parse(void) {
 
-	uint8_t index = 4;
+	uint8_t index = 0;
 
 	// start_lat32
 	// start_lon32
@@ -149,6 +149,10 @@ static void _handle_segment_parse(void) {
 	// cStrEffort_length16
 	// compressedStreamEffort[]
 
+	uint32_t dist = _decode_uint32_little(m_cur_u_seg.buffer+index);
+	index+=4;
+	NRF_LOG_INFO("dist: %lu", dist);
+
 	int32_t i_lat = (int32_t)_decode_uint32_little(m_cur_u_seg.buffer+index) / 119;
 	index+=4;
 	NRF_LOG_INFO("i_lat: %ld", i_lat);
@@ -165,13 +169,11 @@ static void _handle_segment_parse(void) {
 	index+=4;
 	NRF_LOG_INFO("i_lon: %ld", i_lon);
 
-	index+=3; // padding 0
-
 	int16_t grade = (int16_t)_decode_uint16_little(m_cur_u_seg.buffer+index);
 	index+=2;
-	NRF_LOG_INFO("grade: %d", grade);
+	NRF_LOG_INFO("grade: %d * 10", grade * 10 / 255);
 
-	index+=3; // padding 1
+	index+=6; // padding 0
 
 	// dump name
 	uint16_t name_length = m_cur_u_seg.buffer[index];
