@@ -91,7 +91,7 @@ public:
 
 	void toString(void) {
 
-		printf("PolyLine: { \n");
+		printf("PolyLine[%lu]: { \n", _line.size());
 		for (uint16_t i=0; i< _line.size(); i++) {
 			printf("%f %f", _line[i].lat, _line[i].lon);
 			if (i< _line.size()-1) {

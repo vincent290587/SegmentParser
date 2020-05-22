@@ -57,14 +57,14 @@ public:
             			this->done = true;
             			return 0;
             		}
-                	printf("i50 %ld ", (int32_t)i5);
+                	//printf("i50 %ld ", (int32_t)i5);
                     i5 = (i5 & ((uint32_t)-1 >> (32 - i6)));
-                    printf("  i51 %ld ", i5);
+                    //printf("  i51 %ld ", i5);
                     uint32_t tmp = this->decompressed.getInt((i4 + 1) * 4);
                     i5 |= (tmp & (((uint32_t)-1) >> (32 - i7))) << i6;
-                    printf("  i52 %ld \n", (((uint32_t)-1) >> (32 - i7)) << i6);
-            		printf("getInt %ld (%lu) \n", (int32_t)tmp, i4);
-                    printf("i5 %ld i6 %ld \n", i5, i6);
+                    //printf("  i52 %ld \n", (((uint32_t)-1) >> (32 - i7)) << i6);
+            		//printf("getInt %ld (%lu) \n", (int32_t)tmp, i4);
+                    //printf("i5 %ld i6 %ld \n", i5, i6);
 //                } catch (IndexOutOfBoundsException unused) {
 //                    this->done = true;
 //                    return 0;
