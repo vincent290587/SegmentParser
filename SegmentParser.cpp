@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "SequenceUnpacker.h"
+
 #define NRF_LOG_HEXDUMP_INFO(...)          _dump_as_hex(__VA_ARGS__)
 #define NRF_LOG_HEXDUMP_DEBUG(...)         do {} while(0)
 
@@ -227,8 +229,6 @@ static void _handle_segment_parse(void) {
 
 ///////////////////////////////////////////////////////////////////
 
-#include "Base64.h"
-
 
 int main(int argc, char **argv) {
 
@@ -241,6 +241,7 @@ int main(int argc, char **argv) {
 		input[i] = (char)i+'[';
 	}
 
+#if TEST0
 //	std::string to_decode = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
 //	std::string decoded;
 //
@@ -250,7 +251,8 @@ int main(int argc, char **argv) {
 //	NRF_LOG_INFO("Input: %s", to_decode.c_str());
 //	NRF_LOG_INFO("Decoded: %s", decoded.c_str());
 //	NRF_LOG_HEXDUMP_INFO((uint8_t*const) decoded.c_str(), decoded.length());
-
+#endif
+#if TEST1
 //	const char *data = "ABC123Test Lets Try this' input and see What happens";
 	const char       *enc = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
 	char       *out;
@@ -270,6 +272,26 @@ int main(int argc, char **argv) {
 	NRF_LOG_HEXDUMP_INFO((uint8_t*const)out, out_len);
 	printf("dec:     '%s'\n", out);
 	free(out);
+#endif
+#if TEST2
+//	const char  enc[] = {(char)0x04,(char)0x00,(char)0x00,(char)0x00,(char)0x79,(char)0xF0,(char)0x1C,(char)0x82,(char)0x13,(char)0x1F,(char)0x02,(char)0x0E,(char)0x59,(char)0x00,(char)0x00,(char)0x00};
+//	const uint8_t  enc[] = {0x54,0x38,0x4F,0x00,0xD1,0xC7,0x06,0x00,0x59,0x1E,0x33,0x32,0x4F,0x40,0x3F,0x44,0x37,0x2A,0x3F,0x2E,0x39,0x2A,0x3F,0x38,0x4D,0x26,0x55,0x32,0x3D,0x2A,0x4F,0x28} ;
+	const char enc[] = "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE";
+	BaseString input_str;
+	input_str.append((const char*)enc, sizeof(enc));
+
+	printf("input:     '%s'\n", input_str.toString());
+
+	SequenceUnpacker unpacker(input_str, input_str.length());
+
+	unpacker.unpack();
+
+	for (int i=0; i < unpacker.original.size(); i++) {
+		printf("decoded:  '%ld \n", (int32_t)unpacker.original[i]);
+	}
+#endif
+
+
 
 	return 0;
 }
