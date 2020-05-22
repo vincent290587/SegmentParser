@@ -46,22 +46,22 @@ public:
         }
         this->bitCount += i;
         //try {
-    		//printf("getInt %ld \n", this->decompressed.getInt(i4 * 4));
-        	uint32_t i5 = this->decompressed.getInt(i4 * 4) >> i3;
+        	int32_t i5 = (int32_t)this->decompressed.getInt(i4 * 4) >> i3;
+    		//printf("getInt %ld \n", (int32_t)this->decompressed.getInt(i4 * 4));
         	int32_t i6 = 32 - i3;
         	int32_t i7 = i - i6;
             if (i7 > 0) {
 //                try {
-            		if (!this->decompressed.canGetInt(i4 + 1) * 4) {
+            		if (!this->decompressed.canGetInt((i4 + 1) * 4)) {
             			this->done = true;
             			return 0;
             		}
-                	//printf("i50 %ld \n", (int32_t)i5);
+                	//printf("i50 %ld ", (int32_t)i5);
                     i5 = (i5 & ((uint32_t)-1 >> (32 - i6)));
-                    //printf("i51 %ld \n", i5);
+                    //printf("  i51 %ld ", i5);
                     uint32_t tmp = this->decompressed.getInt((i4 + 1) * 4);
                     i5 |= (tmp & (((uint32_t)-1) >> (32 - i7))) << i6;
-                    //printf("i52 %ld \n", ((uint32_t)-1) >> (32 - i7));
+                    //printf("  i52 %ld \n", ((uint32_t)-1) >> (32 - i7));
 //                } catch (IndexOutOfBoundsException unused) {
 //                    this->done = true;
 //                    return 0;
@@ -74,6 +74,52 @@ public:
 //            return 0;
 //        }
     }
+
+//    L_0x0314:
+//        int r8 = r8.length()
+//        r1.append(r8)
+//        java.lang.String r1 = r1.toString()
+//        android.util.Log.i(r4, r1)
+//        java.lang.String r1 = "komTimeSequence"
+//        java.lang.String r8 = "distanceSequence"
+//        if (r21 == 0) goto L_0x0385
+//        r5 = 0
+//        org.joda.time.DateTime r5 = (org.joda.time.DateTime) r5
+//        r2.prDate = r5
+//        int r5 = r7.size()
+//        r6 = 2
+//        if (r5 <= r6) goto L_0x035f
+//        int r5 = r9.size()
+//        if (r5 <= r6) goto L_0x035f
+//        com.lezyne.gpsally.tools.SequencePacker r0 = new com.lezyne.gpsally.tools.SequencePacker
+//        java.util.Collection r7 = (java.util.Collection) r7
+//        int[] r1 = kotlin.collections.CollectionsKt.toIntArray(r7)
+//        r0.<init>(r1)
+//        java.lang.String r0 = r0.pack()
+//        r2.compressedStreamDistance = r0
+//        com.lezyne.gpsally.tools.SequencePacker r0 = new com.lezyne.gpsally.tools.SequencePacker
+//        r13 = r9
+//        java.util.Collection r13 = (java.util.Collection) r13
+//        int[] r1 = kotlin.collections.CollectionsKt.toIntArray(r13)
+//        r0.<init>(r1)
+//        java.lang.String r0 = r0.pack()
+//        r2.compressedKomStreamTime = r0
+//        goto L_0x0401
+//    L_0x035f:
+//        com.lezyne.gpsally.tools.SequencePacker r5 = new com.lezyne.gpsally.tools.SequencePacker
+//        kotlin.jvm.internal.Intrinsics.checkExpressionValueIsNotNull(r3, r8)
+//        int[] r3 = r2.differenceCode((java.util.ArrayList<java.lang.Integer>) r3)
+//        r5.<init>(r3)
+//        java.lang.String r3 = r5.pack()
+//        r2.compressedStreamDistance = r3
+//        com.lezyne.gpsally.tools.SequencePacker r3 = new com.lezyne.gpsally.tools.SequencePacker
+//        kotlin.jvm.internal.Intrinsics.checkExpressionValueIsNotNull(r0, r1)
+//        int[] r0 = r2.differenceCode((java.util.ArrayList<java.lang.Integer>) r0)
+//        r3.<init>(r0)
+//        java.lang.String r0 = r3.pack()
+//        r2.compressedKomStreamTime = r0
+//        goto L_0x0401
+
 
     void unpack() {
 
@@ -91,7 +137,8 @@ public:
     	while (!this->done) {
     		//L_0x0018:
     		uint32_t r4 = this->getBits(r3);
-    		uint32_t r52 = -2147483648;
+    		//printf();
+    		uint32_t r52 = (uint32_t)-2147483648;
     		uint32_t r6 = 32 - r3;
     		uint32_t r5 = r52 >> r6;
     		if (r4 == r5) {
@@ -101,10 +148,10 @@ public:
     			r4 = this->getBits(r3);
     		}
     		//L_0x002f:
-			r1 = r1 - r4;
+			r1 = r1 + r4;
 //			std::vector<uint32_t> arr4 = this->original;
 			//java.lang.Integer arr5 = java.lang.Integer.valueOf(-r1);
-			this->original.push_back(-r1);
+			this->original.push_back(r1);
 //			std::vector<uint32_t> arr41 = this->original;
 			uint32_t r41 = this->original.size();
 			uint32_t r51 = this->count;

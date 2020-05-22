@@ -216,7 +216,7 @@ public:
 
 	bool canGetInt(size_t pos) {
 
-		if (pos+4 >= length()) {
+		if (pos+4 > length()) {
 			return false;
 		}
 
@@ -229,10 +229,12 @@ public:
 			return 0;
 		}
 
-		uint32_t res = original[pos++];
-		res |= original[pos++] << 8;
-		res |= original[pos++] << 16;
-		res |= original[pos] << 24;
+		uint32_t res = original[pos];
+		res |= original[pos+1] << 8;
+		res |= original[pos+2] << 16;
+		res |= original[pos+3] << 24;
+
+		//printf("getInt %lu : %ld \n", pos, (int32_t)res);
 
 		return res;
 	}
