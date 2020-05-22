@@ -26,10 +26,11 @@
  */
 
 #include <string>
+#include <vector>
 
 const char b64chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-uint32_t b64_encoded_size(uint32_t inlen)
+static inline uint32_t b64_encoded_size(uint32_t inlen)
 {
 	uint32_t ret;
 
@@ -47,7 +48,7 @@ uint32_t b64_encoded_size(uint32_t inlen)
 	return ret;
 }
 
-char *b64_encode(const unsigned char *in, size_t len)
+static inline char *b64_encode(const unsigned char *in, size_t len)
 {
 	char   *out;
 	size_t  elen;
@@ -84,14 +85,14 @@ char *b64_encode(const unsigned char *in, size_t len)
 	return out;
 }
 
-int b64invs[] = { 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
+static const int b64invs[] = { 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
 	59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5,
 	6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 	21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28,
 	29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
 	43, 44, 45, 46, 47, 48, 49, 50, 51 };
 
-uint32_t b64_decoded_size(const char *in)
+static inline uint32_t b64_decoded_size(const char *in)
 {
 	uint32_t len;
 	uint32_t ret;
@@ -119,7 +120,7 @@ uint32_t b64_decoded_size(const char *in)
 	return ret;
 }
 
-int b64_isvalidchar(char c)
+static inline int b64_isvalidchar(char c)
 {
 	if (c >= '0' && c <= '9')
 		return 1;
@@ -132,7 +133,7 @@ int b64_isvalidchar(char c)
 	return 0;
 }
 
-int b64_decode(const char *in, unsigned char *out, size_t outlen)
+static inline int b64_decode(const char *in, unsigned char *out, size_t outlen)
 {
 	size_t len;
 	size_t i;
@@ -167,8 +168,6 @@ int b64_decode(const char *in, unsigned char *out, size_t outlen)
 
 	return 1;
 }
-
-#include <vector>
 
 class BaseString {
 public:
@@ -223,9 +222,10 @@ public:
 		return true;
 	}
 
-	uint32_t getInt(size_t pos) {
+	uint32_t getInt(size_t pos, bool &is_error) {
 
 		if (pos+4 > length()) {
+			is_error = true;
 			return 0;
 		}
 

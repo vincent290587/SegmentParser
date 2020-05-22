@@ -47,24 +47,27 @@ public:
         this->bitCount += i;
     	//printf("bitCount %lu \n", this->bitCount);
         //try {
-        	int32_t i5 = (int32_t)this->decompressed.getInt(i4 * 4) >> i3;
+            bool is_error = false;
+        	int32_t i5 = (int32_t)this->decompressed.getInt(i4 * 4, is_error) >> i3;
     		//printf("getInt %ld \n", (int32_t)this->decompressed.getInt(i4 * 4));
         	int32_t i6 = 32 - i3;
         	int32_t i7 = i - i6;
             if (i7 > 0) {
 //                try {
-            		if (!this->decompressed.canGetInt((i4 + 1) * 4)) {
+            		if (is_error) {
             			this->done = true;
-            			return 0;
             		}
                 	//printf("i50 %ld ", (int32_t)i5);
                     i5 = (i5 & ((uint32_t)-1 >> (32 - i6)));
                     //printf("  i51 %ld ", i5);
-                    uint32_t tmp = this->decompressed.getInt((i4 + 1) * 4);
+                    uint32_t tmp = this->decompressed.getInt((i4 + 1) * 4, is_error);
                     i5 |= (tmp & (((uint32_t)-1) >> (32 - i7))) << i6;
                     //printf("  i52 %ld \n", (((uint32_t)-1) >> (32 - i7)) << i6);
             		//printf("getInt %ld (%lu) \n", (int32_t)tmp, i4);
                     //printf("i5 %ld i6 %ld \n", i5, i6);
+            		if (is_error) {
+            			this->done = true;
+            		}
 //                } catch (IndexOutOfBoundsException unused) {
 //                    this->done = true;
 //                    return 0;
@@ -136,6 +139,7 @@ public:
     	r3 = r3 + 2;
     	this->done = false;
     	while (!this->done) {
+	    	//printf("bitCount %lu %lu \n", this->bitCount, this->numberOfBytes*8);
     		//L_0x0018:
     		uint32_t r4 = this->getBits(r3);
     		//printf();
@@ -161,6 +165,9 @@ public:
 			}                //goto L_0x0048;
 			//L_0x0044:
 			//boolean r4 = this->done;
+			if (this->bitCount >= this->numberOfBytes * 8) {
+				break;
+			}
     	}
     	//if (!this->done) goto L_0x0018;
     	//L_0x0048:
