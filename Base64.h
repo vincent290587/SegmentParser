@@ -256,7 +256,7 @@ public:
 				printf(",");
 			}
 		}
-		printf("\n} \n");
+		printf("} \n");
 	}
 
 	const uint8_t * pData() {

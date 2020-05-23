@@ -128,17 +128,41 @@ static uint16_t _decode_uint16_little(uint8_t const *p_data) {
 	return res;
 }
 
+uint16_t FitCRC_Get16(uint16_t crc, uint8_t byte)
+{
+   static const uint16_t crc_table[16] =
+   {
+      0x0000, 0xCC01, 0xD801, 0x1400, 0xF001, 0x3C00, 0x2800, 0xE401,
+      0xA001, 0x6C00, 0x7800, 0xB401, 0x5000, 0x9C01, 0x8801, 0x4400
+   };
+   uint16_t tmp;
+
+   // compute checksum of lower four bits of byte
+   tmp = crc_table[crc & 0xF];
+   crc  = (crc >> 4) & 0x0FFF;
+   crc  = crc ^ tmp ^ crc_table[byte & 0xF];
+
+   // now compute checksum of upper four bits of byte
+   tmp = crc_table[crc & 0xF];
+   crc  = (crc >> 4) & 0x0FFF;
+   crc  = crc ^ tmp ^ crc_table[(byte >> 4) & 0xF];
+
+   return crc;
+}
+
+
 static void _handle_segment_parse(void) {
 
 	uint8_t index = 0;
 	uint16_t nb_points_seg = 0;
 
+	// distance32
 	// start_lat32
 	// start_lon32
 	// end_lat32
 	// end_lon32
 	// grade16
-	// 00 00 00
+	// 00 00 00 00 00 00
 	// name_length8
 	// name[1..19]
 	// poly_length16
@@ -151,6 +175,9 @@ static void _handle_segment_parse(void) {
 	// compressedStreamDistance[]
 	// cStrEffort_length16
 	// compressedStreamEffort[]
+	// padding_4_align
+	// allocateSize16
+	// crc16
 
 	uint32_t dist = _decode_uint32_little(m_cur_u_seg.buffer+index);
 	index+=4;
@@ -219,7 +246,7 @@ static void _handle_segment_parse(void) {
 	uint16_t words_comp =  _decode_uint16_little(m_cur_u_seg.buffer+index);
 	index+=2;
 
-	NRF_LOG_INFO("words_comp: %u", words_comp);
+	NRF_LOG_INFO("words_sum: %u", words_comp);
 
 	uint16_t comp_dist_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
 	index+=2;
@@ -247,7 +274,7 @@ static void _handle_segment_parse(void) {
 	//_dump_as_char(m_cur_u_seg.buffer+index, comp_stream_length);
 	{
 		ByteBuffer bBuffer;
-		bBuffer.addU(m_cur_u_seg.buffer+index, comp_dist_length);
+		bBuffer.addU(m_cur_u_seg.buffer+index, comp_stream_length);
 		SequenceUnpacker unpacker(bBuffer, nb_points_seg-1);
 		unpacker.unpack();
 		for (int i=0; i < unpacker.original.size(); i++) {
@@ -256,6 +283,21 @@ static void _handle_segment_parse(void) {
 	}
 
 	index+=comp_stream_length;
+
+	uint16_t nb_padding = ((words_comp-1) << 2) - (comp_dist_length + comp_stream_length);
+	NRF_LOG_INFO("Nb padding: %u", nb_padding);
+	index+= nb_padding;
+
+	uint16_t allocate_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
+	index+=2;
+	NRF_LOG_INFO("allocate_length: %u", allocate_length);
+
+	uint16_t crc16 = 0;
+    for (int i5 = 0; i5 < index; i5++) {
+    	crc16 = FitCRC_Get16(crc16, m_cur_u_seg.buffer[i5]);
+    }
+	NRF_LOG_INFO("CRC16 : %lu vs %lu", crc16, _decode_uint16_little(m_cur_u_seg.buffer + index));
+
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -263,6 +305,7 @@ static void _handle_segment_parse(void) {
 int main(int argc, char **argv) {
 
 	memcpy(m_cur_u_seg.buffer, m_seg_file, sizeof(m_seg_file));
+	m_cur_u_seg.total_size = sizeof(m_seg_file);
 
 	_handle_segment_parse();
 

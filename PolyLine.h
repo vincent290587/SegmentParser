@@ -98,7 +98,7 @@ public:
 				printf(",\n");
 			}
 		}
-		printf("} \n");
+		printf("\n} \n");
 
 	}
 
