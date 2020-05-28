@@ -159,6 +159,20 @@ static void _dump_as_hex(uint8_t const *p_data, uint16_t length) {
 	printf("} \n");
 }
 
+static void _dump_as_uint(uint8_t const *p_data, uint16_t length) {
+
+	if (!p_data) return;
+
+	printf("{");
+	for (uint16_t i=0; i< length && i < 32; i++) {
+		printf("%u", p_data[i]);
+		if (i< length-1 && i < MAX_ARRAY_PRINTF-1) {
+			printf(",");
+		}
+	}
+	printf("} \n");
+}
+
 static void _dump_as_char(uint8_t const *p_data, uint16_t length) {
 
 	if (!p_data) return;
@@ -329,7 +343,7 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 		bBuffer.addU(m_cur_u_seg.buffer+index, comp_dist_length);
 		SequenceUnpacker unpacker(bBuffer, nb_points_seg-1);
 		unpacker.unpack();
-		for (int i=0; i < unpacker.original.size(); i++) {
+		for (size_t i=0; i < unpacker.original.size(); i++) {
 			printf("Ddist:  %ld \n", (int32_t)unpacker.original[i]);
 		}
 	}
@@ -353,7 +367,7 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 	NRF_LOG_INFO("allocate_length: %u", allocate_length);
 
 	uint16_t crc16 = 0;
-    for (int i5 = 0; i5 < index; i5++) {
+    for (uint16_t i5 = 0; i5 < index; i5++) {
     	crc16 = FitCRC_Get16(crc16, m_cur_u_seg.buffer[i5]);
     }
 	NRF_LOG_INFO("CRC16 : %lu vs %lu", crc16, _decode_uint16_little(m_cur_u_seg.buffer + index));
@@ -362,7 +376,7 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 
 		index = m_cur_u_seg.poly_index;
 
-		NRF_LOG_HEXDUMP_DEBUG(m_cur_u_seg.buffer+index, poly_length);
+		//NRF_LOG_HEXDUMP_DEBUG(m_cur_u_seg.buffer+index, poly_length);
 		{
 			ByteBuffer bBuffer;
 			bBuffer.addU(m_cur_u_seg.buffer+index, poly_length);
@@ -376,15 +390,17 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 		index = m_cur_u_seg.effort_index;
 
 		NRF_LOG_HEXDUMP_DEBUG(m_cur_u_seg.buffer+index, comp_stream_length);
+		//_dump_as_uint(m_cur_u_seg.buffer+index, comp_stream_length);
 		//_dump_as_char(m_cur_u_seg.buffer+index, comp_stream_length);
 		{
 			ByteBuffer bBuffer;
 			bBuffer.addU(m_cur_u_seg.buffer+index, comp_stream_length);
 			SequenceUnpacker unpacker(bBuffer, nb_points_seg-1);
 			unpacker.unpack();
-			for (int i=0; i < unpacker.original.size(); i++) {
-				printf("Dt:  %ld \n", (int32_t)unpacker.original[i]);
+			for (size_t i=0; i < unpacker.original.size(); i++) {
+				printf("%ld ", (int32_t)unpacker.original[i]);
 			}
+			printf("\n ");
 		}
 	}
 }
