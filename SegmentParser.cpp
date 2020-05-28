@@ -227,7 +227,7 @@ uint16_t FitCRC_Get16(uint16_t crc, uint8_t byte)
    return crc;
 }
 
-#define INCREMENT_INDEX(INCR)              do { index += (INCR); if (index > m_cur_u_seg.total_size) return; } while(0)
+#define INCREMENT_INDEX(INCR)              do { index += (INCR); if (index > m_cur_u_seg.cur_size) return; } while(0)
 
 static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 
@@ -258,68 +258,68 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 	// crc16
 
 	uint32_t dist = _decode_uint32_little(m_cur_u_seg.buffer+index);
-	index+=4;
+	INCREMENT_INDEX(4);
 	NRF_LOG_INFO("dist : %lu", dist);
 
 	int32_t i_lat = (int32_t)_decode_uint32_little(m_cur_u_seg.buffer+index) / 119;
-	index+=4;
+	INCREMENT_INDEX(4);
 	NRF_LOG_INFO("i_lat: %ld", i_lat);
 
 	int32_t i_lon = (int32_t)_decode_uint32_little(m_cur_u_seg.buffer+index) / 119;
-	index+=4;
+	INCREMENT_INDEX(4);
 	NRF_LOG_INFO("i_lon: %ld", i_lon);
 
 	i_lat = (int32_t)_decode_uint32_little(m_cur_u_seg.buffer+index) / 119;
-	index+=4;
+	INCREMENT_INDEX(4);
 	NRF_LOG_INFO("i_lat: %ld", i_lat);
 
 	i_lon = (int32_t)_decode_uint32_little(m_cur_u_seg.buffer+index) / 119;
-	index+=4;
+	INCREMENT_INDEX(4);
 	NRF_LOG_INFO("i_lon: %ld", i_lon);
 
 	int16_t grade = (int16_t)_decode_uint16_little(m_cur_u_seg.buffer+index);
-	index+=2;
+	INCREMENT_INDEX(2);
 	NRF_LOG_INFO("grade * 10: %d", grade * 10 / 255);
 
-	index+=6; // padding 0
+	INCREMENT_INDEX(6); // padding 0
 
 	// dump name
 	uint16_t name_length = m_cur_u_seg.buffer[index];
-	index+=1;
+	INCREMENT_INDEX(1);
 
 	NRF_LOG_INFO("name_length: %u", name_length);
 
 	_dump_as_char(m_cur_u_seg.buffer+index, name_length); // name
-	index+=name_length;
+	INCREMENT_INDEX(name_length);
 
 	uint16_t poly_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
-	index+=2;
+	INCREMENT_INDEX(2);
 
 	NRF_LOG_INFO("Polyline length: %u", poly_length);
 
 	m_cur_u_seg.poly_index = index;
 
-	index+=poly_length;
+	INCREMENT_INDEX(poly_length);
 
 	// pr time
 	uint16_t pr_time =  _decode_uint16_little(m_cur_u_seg.buffer+index);
-	index+=2;
+	INCREMENT_INDEX(2);
 
 	// kom time
 	uint16_t kom_time =  _decode_uint16_little(m_cur_u_seg.buffer+index);
-	index+=2;
+	INCREMENT_INDEX(2);
 
 	NRF_LOG_INFO("PR/KOM times: %u %u", pr_time, kom_time);
 
-	index+=2; // hazardous
+	INCREMENT_INDEX(2); // hazardous
 
 	uint16_t words_comp =  _decode_uint16_little(m_cur_u_seg.buffer+index);
-	index+=2;
+	INCREMENT_INDEX(2);
 
 	NRF_LOG_INFO("words_sum: %u", words_comp);
 
 	uint16_t comp_dist_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
-	index+=2;
+	INCREMENT_INDEX(2);
 
 	NRF_LOG_INFO("Dist stream length: %u", comp_dist_length);
 
@@ -333,23 +333,23 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 			printf("Ddist:  %ld \n", (int32_t)unpacker.original[i]);
 		}
 	}
-	index+=comp_dist_length;
+	INCREMENT_INDEX(comp_dist_length);
 
 	uint16_t comp_stream_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
-	index+=2;
+	INCREMENT_INDEX(2);
 
 	NRF_LOG_INFO("Effort stream length: %u", comp_stream_length);
 
 	m_cur_u_seg.effort_index = index;
 
-	index+=comp_stream_length;
+	INCREMENT_INDEX(comp_stream_length);
 
 	uint16_t nb_padding = ((words_comp-1) << 2) - (comp_dist_length + comp_stream_length);
 	NRF_LOG_INFO("Nb padding: %u", nb_padding);
-	index+= nb_padding;
+	INCREMENT_INDEX(nb_padding);
 
 	uint16_t allocate_length = _decode_uint16_little(m_cur_u_seg.buffer+index);
-	index+=2;
+	INCREMENT_INDEX(2);
 	NRF_LOG_INFO("allocate_length: %u", allocate_length);
 
 	uint16_t crc16 = 0;
