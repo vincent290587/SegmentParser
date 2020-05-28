@@ -8,7 +8,7 @@
 #include "SequenceUnpacker.h"
 
 #define NRF_LOG_HEXDUMP_INFO(...)          _dump_as_hex(__VA_ARGS__)
-#define NRF_LOG_HEXDUMP_DEBUG(...)         do {} while(0)
+#define NRF_LOG_HEXDUMP_DEBUG(...)         NRF_LOG_HEXDUMP_INFO(__VA_ARGS__)
 
 #define NRF_LOG_INFO(...)                  printf(__VA_ARGS__);printf("\n")
 
@@ -63,6 +63,8 @@ public:
 	uint32_t total_size;
 	uint8_t  *buffer;
 	LatLng   startPnt;
+	uint16_t poly_index;
+	uint16_t effort_index;
 };
 
 //static const uint8_t m_seg_file[] = {
@@ -225,10 +227,11 @@ uint16_t FitCRC_Get16(uint16_t crc, uint8_t byte)
    return crc;
 }
 
+#define INCREMENT_INDEX(INCR)              do { index += (INCR); if (index > m_cur_u_seg.total_size) return; } while(0)
 
 static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 
-	uint16_t index = 0;
+	uint32_t index = 0;
 	uint16_t nb_points_seg = 0;
 
 	// distance32
@@ -294,16 +297,8 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 
 	NRF_LOG_INFO("Polyline length: %u", poly_length);
 
-	NRF_LOG_HEXDUMP_INFO(m_cur_u_seg.buffer+index, poly_length);
-	{
-		ByteBuffer bBuffer;
-		bBuffer.addU(m_cur_u_seg.buffer+index, poly_length);
+	m_cur_u_seg.poly_index = index;
 
-		PolyLine myPoly;
-		myPoly.decodeBinaryPolyline(bBuffer);
-		nb_points_seg = myPoly._line.size();
-		myPoly.toString();
-	}
 	index+=poly_length;
 
 	// pr time
@@ -328,8 +323,8 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 
 	NRF_LOG_INFO("Dist stream length: %u", comp_dist_length);
 
-	NRF_LOG_HEXDUMP_INFO(m_cur_u_seg.buffer+index, comp_dist_length);
-	{
+	if (0) {
+		NRF_LOG_HEXDUMP_DEBUG(m_cur_u_seg.buffer+index, comp_dist_length);
 		ByteBuffer bBuffer;
 		bBuffer.addU(m_cur_u_seg.buffer+index, comp_dist_length);
 		SequenceUnpacker unpacker(bBuffer, nb_points_seg-1);
@@ -345,17 +340,7 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 
 	NRF_LOG_INFO("Effort stream length: %u", comp_stream_length);
 
-	NRF_LOG_HEXDUMP_INFO(m_cur_u_seg.buffer+index, comp_stream_length);
-	//_dump_as_char(m_cur_u_seg.buffer+index, comp_stream_length);
-	{
-		ByteBuffer bBuffer;
-		bBuffer.addU(m_cur_u_seg.buffer+index, comp_stream_length);
-		SequenceUnpacker unpacker(bBuffer, nb_points_seg-1);
-		unpacker.unpack();
-		for (int i=0; i < unpacker.original.size(); i++) {
-			printf("Dt:  %ld \n", (int32_t)unpacker.original[i]);
-		}
-	}
+	m_cur_u_seg.effort_index = index;
 
 	index+=comp_stream_length;
 
@@ -373,6 +358,35 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
     }
 	NRF_LOG_INFO("CRC16 : %lu vs %lu", crc16, _decode_uint16_little(m_cur_u_seg.buffer + index));
 
+	if (crc16 == _decode_uint16_little(m_cur_u_seg.buffer + index)) {
+
+		index = m_cur_u_seg.poly_index;
+
+		NRF_LOG_HEXDUMP_DEBUG(m_cur_u_seg.buffer+index, poly_length);
+		{
+			ByteBuffer bBuffer;
+			bBuffer.addU(m_cur_u_seg.buffer+index, poly_length);
+
+			PolyLine myPoly;
+			myPoly.decodeBinaryPolyline(bBuffer);
+			nb_points_seg = myPoly._line.size();
+			myPoly.toString();
+		}
+
+		index = m_cur_u_seg.effort_index;
+
+		NRF_LOG_HEXDUMP_DEBUG(m_cur_u_seg.buffer+index, comp_stream_length);
+		//_dump_as_char(m_cur_u_seg.buffer+index, comp_stream_length);
+		{
+			ByteBuffer bBuffer;
+			bBuffer.addU(m_cur_u_seg.buffer+index, comp_stream_length);
+			SequenceUnpacker unpacker(bBuffer, nb_points_seg-1);
+			unpacker.unpack();
+			for (int i=0; i < unpacker.original.size(); i++) {
+				printf("Dt:  %ld \n", (int32_t)unpacker.original[i]);
+			}
+		}
+	}
 }
 
 ///////////////////////////////////////////////////////////////////
