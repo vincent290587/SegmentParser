@@ -149,11 +149,11 @@ static void _dump_as_hex(uint8_t const *p_data, uint16_t length) {
 
 	if (!p_data) return;
 
-	printf("{0x");
+	printf("{(byte)0x");
 	for (uint16_t i=0; i< length && i < MAX_ARRAY_PRINTF; i++) {
 		printf("%02X", p_data[i]);
 		if (i< length-1 && i < MAX_ARRAY_PRINTF-1) {
-			printf(",0x");
+			printf(",(byte)0x");
 		}
 	}
 	printf("} \n");
@@ -246,7 +246,6 @@ uint16_t FitCRC_Get16(uint16_t crc, uint8_t byte)
 static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 
 	uint32_t index = 0;
-	uint16_t nb_points_seg = 0;
 
 	// distance32
 	// start_lat32
@@ -341,7 +340,7 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 		NRF_LOG_HEXDUMP_DEBUG(m_cur_u_seg.buffer+index, comp_dist_length);
 		ByteBuffer bBuffer;
 		bBuffer.addU(m_cur_u_seg.buffer+index, comp_dist_length);
-		SequenceUnpacker unpacker(bBuffer, nb_points_seg-1);
+		SequenceUnpacker unpacker(bBuffer, comp_dist_length);
 		unpacker.unpack();
 		for (size_t i=0; i < unpacker.original.size(); i++) {
 			printf("Ddist:  %ld \n", (int32_t)unpacker.original[i]);
@@ -383,7 +382,6 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 
 			PolyLine myPoly;
 			myPoly.decodeBinaryPolyline(bBuffer);
-			nb_points_seg = myPoly._line.size();
 			myPoly.toString();
 		}
 
@@ -395,12 +393,15 @@ static void _handle_segment_parse(UploadSegment& m_cur_u_seg) {
 		{
 			ByteBuffer bBuffer;
 			bBuffer.addU(m_cur_u_seg.buffer+index, comp_stream_length);
-			SequenceUnpacker unpacker(bBuffer, nb_points_seg-1);
+			SequenceUnpacker unpacker(bBuffer, comp_dist_length);
 			unpacker.unpack();
+			int32_t tot_time = 0;
 			for (size_t i=0; i < unpacker.original.size(); i++) {
+				tot_time += (int32_t)unpacker.original[i];
 				printf("%ld ", (int32_t)unpacker.original[i]);
 			}
 			printf("\n ");
+			printf("TOT time = %ld vs. PR %u \n ", tot_time, pr_time);
 		}
 	}
 }

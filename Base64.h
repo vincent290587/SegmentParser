@@ -275,7 +275,7 @@ public:
 	ByteBuffer& decode(BaseString &in, uint8_t flags) {
 
 		size_t         out_len;
-		unsigned char  buffer[500];
+		unsigned char  buffer[1200];
 
 		out_len = b64_decoded_size(in.toString());
 
