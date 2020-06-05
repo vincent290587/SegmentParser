@@ -177,7 +177,7 @@ public:
 
 	void append(const char * buffer, size_t length) {
 
-		for (int i=0; i< length; i++) {
+		for (size_t i=0; i< length; i++) {
 			original.push_back((char)buffer[i]);
 		}
 	}
@@ -201,14 +201,14 @@ public:
 
 	void add(const unsigned char buffer[], size_t length) {
 
-		for (int i=0; i< length; i++) {
+		for (size_t i=0; i< length; i++) {
 			original.push_back((uint8_t)buffer[i]);
 		}
 	}
 
 	void addU(const uint8_t buffer[], size_t length) {
 
-		for (int i=0; i< length; i++) {
+		for (size_t i=0; i< length; i++) {
 			original.push_back(buffer[i]);
 		}
 	}
@@ -243,7 +243,7 @@ public:
 		return original.size();
 	}
 
-	uint8_t operator [](uint8_t pos) {
+	uint8_t operator [](size_t pos) {
 		return original[pos];
 	}
 
