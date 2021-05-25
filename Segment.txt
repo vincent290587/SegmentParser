@@ -1,0 +1,98 @@
+00> <info> app: Debug logging for UART over RTT started.
+00> 
+00> <info> app_timer: RTC: initialized.
+00> 
+00> <info> app: Go !
+00> 
+00> <info> app: Connected
+00> 
+00> <info> app: Data len is set to 0xF4(244)
+00> 
+00> <info> app: Location/Speed: Notification enabled
+00> 
+00> <info> app: NewSegmentListReady (1 0)
+00> 
+00> <info> app: SegmentListItemDone (5205054 445507)
+00> 
+00> <info> app:  8A 86 4D 00 00 00 00 00|..M.....
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  14 8A 86 4D 00 00 00 00|...M....
+00> 
+00> <info> app:  00 A2 00 00 00 00 00 00|........
+00> 
+00> <info> app:  00 00 00 00            |....    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  15 9D 03 00 00 47 51 EB|.....GQ.
+00> 
+00> <info> app:  24 E0 F3 28 03 13 F6 E9|$..(....
+00> 
+00> <info> app:  24 52 00 2A            |$R.*    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  15 03 99 00 00 00 00 00|........
+00> 
+00> <info> app:  00 00 13 4D 61 74 68 65|...Mathe
+00> 
+00> <info> app:  72 6E 65 73            |rnes    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  15 73 65 72 62 72 75 67|.serbrug
+00> 
+00> <info> app:  20 2D 20 38 00 54 38 4F| - 8.T8O
+00> 
+00> <info> app:  00 D1 C7 06            |....    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  15 00 59 1E 33 32 4F 40|..Y.32O@
+00> 
+00> <info> app:  3F 44 37 2A 3F 2E 39 2A|?D7*?.9*
+00> 
+00> <info> app:  3F 38 4D 26            |?8M&    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  15 55 32 3D 2A 4F 28 45|.U2=*O(E
+00> 
+00> <info> app:  34 43 22 23 30 1F 20 45|4C"#0. E
+00> 
+00> <info> app:  2E 33 30 43            |.30C    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  15 3E 35 22 23 30 3F 42|.>5"#0?B
+00> 
+00> <info> app:  39 3E 2F 38 58 00 3F 00|9>/8X.?.
+00> 
+00> <info> app:  00 00 0B 00            |....    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  15 18 00 34 00 00 00 74|...4...t
+00> 
+00> <info> app:  1D DE 26 7A 22 09 68 26|..&z".h&
+00> 
+00> <info> app:  E7 EB FC 02            |....    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  15 67 97 F4 CC 77 00 00|.g...w..
+00> 
+00> <info> app:  10 00 04 00 00 00 79 F0|......y.
+00> 
+00> <info> app:  1C 82 13 1F            |....    
+00> 
+00> <info> app: Received data from BLE NUS
+00> 
+00> <info> app:  16 02 0E 59 00 00 00 9E|...Y....
+00> 
+00> <info> app:  00 57 B3 00 00 00 00 00|.W......
+00> 
+00> <info> app:  00 00 00 00            |....    
+00> 
